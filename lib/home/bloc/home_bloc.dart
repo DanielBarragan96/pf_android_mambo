@@ -145,4 +145,8 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
       'Authorization': 'Bearer $SPOTIFY_API_KEY',
     });
   }
+
+  updateSpotifyKey(String newKey) {
+    SPOTIFY_API_KEY = newKey;
+  }
 }

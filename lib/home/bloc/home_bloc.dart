@@ -19,10 +19,9 @@ part 'home_state.dart';
 
 class HomeBloc extends Bloc<HomeEvent, HomeState> {
   final LoginBloc loginBloc;
-  http.Client _inner = http.Client();
   List<Artist> topArtists = List();
   List<Track> topTracks = List();
-  String SPOTIFY_API_KEY =
+  String spotifyApiKey =
       "BQCo1KwJqcc79gR6RFdF8uTcYfAsV1dvsGNTogJtBxplV0Q45EqBnxbbsN-9F1QS-d-O21UYvcJN7lhTCNy8gh4oxPrVZkmPVqxfgTpZ8uQUuFqN0nAYgzclHLKByuH6X4008tfn0Kw8STQjG2nHsX6t6LugOyvQQocTUgQ6q_4rP2HapQ3vxg";
 
   HomeBloc({@required this.loginBloc}) : super(MenuMapState());
@@ -133,7 +132,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
 
     return http.get(url, headers: {
       'Content-Type': 'application/json',
-      'Authorization': 'Bearer $SPOTIFY_API_KEY',
+      'Authorization': 'Bearer $spotifyApiKey',
     });
   }
 
@@ -142,11 +141,11 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
 
     return http.get(url, headers: {
       'Content-Type': 'application/json',
-      'Authorization': 'Bearer $SPOTIFY_API_KEY',
+      'Authorization': 'Bearer $spotifyApiKey',
     });
   }
 
   updateSpotifyKey(String newKey) {
-    SPOTIFY_API_KEY = newKey;
+    spotifyApiKey = newKey;
   }
 }

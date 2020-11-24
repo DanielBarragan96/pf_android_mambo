@@ -1,14 +1,12 @@
 import 'package:entregable_2/colors.dart';
 import 'package:entregable_2/home/bloc/home_bloc.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class DrawerWidget extends StatefulWidget {
   final HomeBloc bloc;
 
-  //TODO hacer bloc required para mapa y para stats
   DrawerWidget({Key key, this.bloc}) : super(key: key);
 
   @override

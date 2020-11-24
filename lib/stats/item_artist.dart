@@ -9,7 +9,6 @@ class ItemArtist extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // TODO: Cambiar image.network por Extended Image con place holder en caso de error o mientras descarga la imagen
     return Container(
       child: Padding(
         padding: EdgeInsets.all(6.0),

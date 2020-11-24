@@ -1,0 +1,4 @@
+#Wed Oct 14 18:05:09 CDT 2020
+base.0=C\:\\AppMoviles\\Proyecto\\entregable_2\\android\\app\\build\\intermediates\\dex\\release\\mergeDexRelease\\out\\classes.dex
+path.0=classes.dex
+renamed.0=classes.dex

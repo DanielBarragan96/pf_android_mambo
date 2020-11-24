@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "33390653215",
+    "firebase_url": "https://proyecto-final-android-2020.firebaseio.com",
+    "project_id": "proyecto-final-android-2020",
+    "storage_bucket": "proyecto-final-android-2020.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:33390653215:android:ad7eac5741f2d77431ca2a",
+        "android_client_info": {
+          "package_name": "com.example.entregable_2"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "33390653215-5ffc4ikbigphc6o7vq8uo1jtced0ggb9.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.entregable_2",
+            "certificate_hash": "9365178c56d75dd5c36ea98246bac5ec378b3578"
+          }
+        },
+        {
+          "client_id": "33390653215-jisffnpjuv7483gm5endhgj4t2egj2s9.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBIdjvJkF8sGKC85AHTV2lDDxb6jtv1zQo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "33390653215-jisffnpjuv7483gm5endhgj4t2egj2s9.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

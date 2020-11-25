@@ -49,39 +49,44 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     } else if (event is SingleChatEvent) {
       yield SingleChatState(userName: event.userName);
     } else if (event is LoadSpotifyStatsEvent) {
-      // get artists stats
-      var responseArtist = await getSpotifyArtistStats();
-      // decode json response
-      Map<String, dynamic> dataArtist = jsonDecode(responseArtist.body);
+      try {
+        // get artists stats
+        var responseArtist = await getSpotifyArtistStats();
+        // decode json response
+        Map<String, dynamic> dataArtist = jsonDecode(responseArtist.body);
 
-      // create top artists list
-      topArtists = List();
-      for (var artist in dataArtist["items"])
-        topArtists.add(Artist(
-          artistName: "${artist["name"]}",
-          artistImageUrl: "${artist["images"][0]["url"]}",
-          artistUrl: "${artist["external_urls"]["spotify"]}",
-        ));
-      print(topArtists.toString());
+        // create top artists list
+        topArtists = List();
+        for (var artist in dataArtist["items"])
+          topArtists.add(Artist(
+            artistName: "${artist["name"]}",
+            artistImageUrl: "${artist["images"][0]["url"]}",
+            artistUrl: "${artist["external_urls"]["spotify"]}",
+          ));
+        print(topArtists.toString());
 
-      // get tracks stats
-      var responseTrack = await getSpotifyTrackStats();
-      // decode json response
-      Map<String, dynamic> dataTrack = jsonDecode(responseTrack.body);
+        // get tracks stats
+        var responseTrack = await getSpotifyTrackStats();
+        // decode json response
+        Map<String, dynamic> dataTrack = jsonDecode(responseTrack.body);
 
-      // create top tracks list
-      topTracks = List();
-      for (var track in dataTrack["items"]) {
-        topTracks.add(Track(
-          trackName: "${track["name"]}",
-          artistName: "${track["artists"][0]["name"]}",
-          albumName: "${track["album"]["name"]}",
-          albumImageUrl: "${track["album"]["images"][0]["url"]}",
-          trackUrl: "${track["external_urls"]["spotify"]}",
-        ));
+        // create top tracks list
+        topTracks = List();
+        for (var track in dataTrack["items"]) {
+          topTracks.add(Track(
+            trackName: "${track["name"]}",
+            artistName: "${track["artists"][0]["name"]}",
+            albumName: "${track["album"]["name"]}",
+            albumImageUrl: "${track["album"]["images"][0]["url"]}",
+            trackUrl: "${track["external_urls"]["spotify"]}",
+          ));
+        }
+        print(topTracks.toString());
+        yield MenuStatsState(topTracks: topTracks, topArtists: topArtists);
+      } catch (error) {
+        //TODO error al cargar stats
+        print(error);
       }
-      print(topTracks.toString());
-      yield MenuStatsState(topTracks: topTracks, topArtists: topArtists);
     }
   }
 

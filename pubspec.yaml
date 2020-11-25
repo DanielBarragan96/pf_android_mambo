@@ -42,6 +42,7 @@ dependencies:
   share: ^0.6.5+3
   charts_flutter: ^0.8.1
   http: ^0.12.2
+  url_launcher: ^5.7.10
 
 dev_dependencies:
   flutter_test:

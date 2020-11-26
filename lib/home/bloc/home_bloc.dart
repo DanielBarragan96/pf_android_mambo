@@ -79,6 +79,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
             albumName: "${track["album"]["name"]}",
             albumImageUrl: "${track["album"]["images"][0]["url"]}",
             trackUrl: "${track["external_urls"]["spotify"]}",
+            trackUri: "${track["uri"]}",
           ));
         }
         print(topTracks.toString());

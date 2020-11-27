@@ -13,16 +13,16 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:http/http.dart' as http;
+import 'package:url_launcher/url_launcher.dart';
 
 part 'home_event.dart';
 part 'home_state.dart';
 
 class HomeBloc extends Bloc<HomeEvent, HomeState> {
   final LoginBloc loginBloc;
-  http.Client _inner = http.Client();
   List<Artist> topArtists = List();
   List<Track> topTracks = List();
-  String SPOTIFY_API_KEY =
+  String spotifyApiKey =
       "BQCo1KwJqcc79gR6RFdF8uTcYfAsV1dvsGNTogJtBxplV0Q45EqBnxbbsN-9F1QS-d-O21UYvcJN7lhTCNy8gh4oxPrVZkmPVqxfgTpZ8uQUuFqN0nAYgzclHLKByuH6X4008tfn0Kw8STQjG2nHsX6t6LugOyvQQocTUgQ6q_4rP2HapQ3vxg";
 
   HomeBloc({@required this.loginBloc}) : super(MenuMapState());
@@ -50,39 +50,69 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     } else if (event is SingleChatEvent) {
       yield SingleChatState(userName: event.userName);
     } else if (event is LoadSpotifyStatsEvent) {
-      // get artists stats
-      var responseArtist = await getSpotifyArtistStats();
-      // decode json response
-      Map<String, dynamic> dataArtist = jsonDecode(responseArtist.body);
+      try {
+        // get artists stats
+        var responseArtist = await getSpotifyArtistStats();
+        // decode json response
+        Map<String, dynamic> dataArtist = jsonDecode(responseArtist.body);
 
-      // create top artists list
-      topArtists = List();
-      for (var artist in dataArtist["items"])
-        topArtists.add(Artist(
-          artistName: "${artist["name"]}",
-          artistImageUrl: "${artist["images"][0]["url"]}",
-          artistUrl: "${artist["external_urls"]["spotify"]}",
-        ));
-      print(topArtists.toString());
+        // create top artists list
+        topArtists = List();
+        for (var artist in dataArtist["items"])
+          topArtists.add(Artist(
+            artistName: "${artist["name"]}",
+            artistImageUrl: "${artist["images"][0]["url"]}",
+            artistUrl: "${artist["external_urls"]["spotify"]}",
+          ));
+        print(topArtists.toString());
 
-      // get tracks stats
-      var responseTrack = await getSpotifyTrackStats();
-      // decode json response
-      Map<String, dynamic> dataTrack = jsonDecode(responseTrack.body);
+        // get tracks stats
+        var responseTrack = await getSpotifyTrackStats();
+        // decode json response
+        Map<String, dynamic> dataTrack = jsonDecode(responseTrack.body);
 
-      // create top tracks list
-      topTracks = List();
-      for (var track in dataTrack["items"]) {
-        topTracks.add(Track(
-          trackName: "${track["name"]}",
-          artistName: "${track["artists"][0]["name"]}",
-          albumName: "${track["album"]["name"]}",
-          albumImageUrl: "${track["album"]["images"][0]["url"]}",
-          trackUrl: "${track["external_urls"]["spotify"]}",
-        ));
+        // create top tracks list
+        topTracks = List();
+        for (var track in dataTrack["items"]) {
+          topTracks.add(Track(
+            trackName: "${track["name"]}",
+            artistName: "${track["artists"][0]["name"]}",
+            albumName: "${track["album"]["name"]}",
+            albumImageUrl: "${track["album"]["images"][0]["url"]}",
+            trackUrl: "${track["external_urls"]["spotify"]}",
+            trackUri: "${track["uri"]}",
+          ));
+        }
+        print(topTracks.toString());
+        yield MenuStatsState(topTracks: topTracks, topArtists: topArtists);
+      } catch (error) {
+        //TODO error al cargar stats
+        print(error);
       }
-      print(topTracks.toString());
-      yield MenuStatsState(topTracks: topTracks, topArtists: topArtists);
+    } else if (event is CreateSpotifyPlaylistEvent) {
+      if (topTracks.length > 0) {
+        try {
+          //create playlist
+          var responsePlaylistCreate = await createSpotifyPlaylist(event.title);
+          Map<String, dynamic> dataPlaylist =
+              jsonDecode(responsePlaylistCreate.body);
+          String newPlaylistUrl = dataPlaylist["external_urls"]["spotify"];
+          String newPlaylistId = dataPlaylist["id"];
+          print(newPlaylistUrl);
+
+          //add tracks
+          if (!event.sharedSongs) {
+            var body = {"uris": []};
+            for (var track in topTracks) {
+              body["uris"].add(track.trackUri);
+            }
+            await addTracksSpotifyPlaylist(body, newPlaylistId);
+            launch(newPlaylistUrl);
+          }
+        } catch (error) {
+          print(error);
+        }
+      }
     }
   }
 
@@ -133,7 +163,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
 
     return http.get(url, headers: {
       'Content-Type': 'application/json',
-      'Authorization': 'Bearer $SPOTIFY_API_KEY',
+      'Authorization': 'Bearer $spotifyApiKey',
     });
   }
 
@@ -142,7 +172,40 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
 
     return http.get(url, headers: {
       'Content-Type': 'application/json',
-      'Authorization': 'Bearer $SPOTIFY_API_KEY',
+      'Authorization': 'Bearer $spotifyApiKey',
+    });
+  }
+
+  updateSpotifyKey(String newKey) {
+    spotifyApiKey = newKey;
+  }
+
+  Future<http.Response> createSpotifyPlaylist(String title) {
+    String spotifyId = "flpnnk481ygtk9u1l1mcw9cs8";
+    String url = "https://api.spotify.com/v1/users/$spotifyId/playlists";
+
+    var requestBody = {
+      "name": "$title",
+      "description": "This playlista was created using Mambo",
+      "public": true
+    };
+
+    return http.post(url, body: jsonEncode(requestBody), headers: {
+      'Accept': 'application/json',
+      // 'Content-Type': 'application/json',
+      'Authorization': 'Bearer $spotifyApiKey',
+    });
+  }
+
+  Future<http.Response> addTracksSpotifyPlaylist(var body, String playlistId) {
+    String url = "https://api.spotify.com/v1/playlists/$playlistId/tracks";
+
+    String requestBody = jsonEncode(body);
+
+    return http.post(url, body: requestBody, headers: {
+      'Accept': 'application/json',
+      // 'Content-Type': 'application/json',
+      'Authorization': 'Bearer $spotifyApiKey',
     });
   }
 }

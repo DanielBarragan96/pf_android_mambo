@@ -4,13 +4,16 @@ class Track {
   final String albumName;
   final String albumImageUrl;
   final String trackUrl;
+  final String trackUri;
 
-  Track(
-      {this.artistName,
-      this.trackName,
-      this.albumName,
-      this.albumImageUrl,
-      this.trackUrl});
+  Track({
+    this.artistName,
+    this.trackName,
+    this.albumName,
+    this.albumImageUrl,
+    this.trackUrl,
+    this.trackUri,
+  });
 
   @override
   String toString() {

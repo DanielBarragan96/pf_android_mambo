@@ -1,5 +1,7 @@
 import 'package:entregable_2/models/artist.dart';
 import 'package:flutter/material.dart';
+import 'package:url_launcher/url_launcher.dart';
+import 'package:share/share.dart';
 
 import '../colors.dart';
 
@@ -9,52 +11,59 @@ class ItemArtist extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // TODO: Cambiar image.network por Extended Image con place holder en caso de error o mientras descarga la imagen
-    return Container(
-      child: Padding(
-        padding: EdgeInsets.all(6.0),
-        child: Card(
-          color: kLightBlack,
-          child: Row(
-            children: [
-              Container(
-                margin: EdgeInsets.symmetric(vertical: 10, horizontal: 10),
-                child: (artist.artistImageUrl == "" ||
-                        artist.artistImageUrl == null)
-                    ? Placeholder(
-                        color: Colors.purple,
-                        fallbackHeight: 32,
-                        fallbackWidth: 32,
-                      )
-                    : Image.network(
-                        artist.artistImageUrl,
-                        height: 80,
-                        width: 80,
-                      ),
-              ),
-              Expanded(
-                flex: 3,
-                child: Padding(
-                  padding: EdgeInsets.all(12.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Text(
-                        "${artist.artistName}",
-                        maxLines: 1,
-                        overflow: TextOverflow.clip,
-                        style: TextStyle(
-                          fontWeight: FontWeight.w900,
-                          fontSize: 20,
-                          color: kWhite,
+    return GestureDetector(
+      onTap: () {
+        launch(artist.artistUrl);
+      },
+      onLongPress: () {
+        Share.share(artist.artistUrl, subject: artist.artistName);
+      },
+      child: Container(
+        child: Padding(
+          padding: EdgeInsets.all(6.0),
+          child: Card(
+            color: kLightBlack,
+            child: Row(
+              children: [
+                Container(
+                  margin: EdgeInsets.symmetric(vertical: 10, horizontal: 10),
+                  child: (artist.artistImageUrl == "" ||
+                          artist.artistImageUrl == null)
+                      ? Placeholder(
+                          color: Colors.purple,
+                          fallbackHeight: 32,
+                          fallbackWidth: 32,
+                        )
+                      : Image.network(
+                          artist.artistImageUrl,
+                          height: 80,
+                          width: 80,
                         ),
-                      ),
-                    ],
+                ),
+                Expanded(
+                  flex: 3,
+                  child: Padding(
+                    padding: EdgeInsets.all(12.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text(
+                          "${artist.artistName}",
+                          maxLines: 1,
+                          overflow: TextOverflow.clip,
+                          style: TextStyle(
+                            fontWeight: FontWeight.w900,
+                            fontSize: 20,
+                            color: kWhite,
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),

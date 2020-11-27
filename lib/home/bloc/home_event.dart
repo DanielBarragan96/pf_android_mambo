@@ -36,10 +36,21 @@ class SingleChatEvent extends HomeEvent {
   SingleChatEvent({@required this.userName});
 
   @override
-  List<Object> get props => [];
+  List<Object> get props => [userName];
 }
 
 class LoadSpotifyStatsEvent extends HomeEvent {
   @override
   List<Object> get props => [];
+}
+
+class CreateSpotifyPlaylistEvent extends HomeEvent {
+  final String title;
+  final bool sharedSongs;
+
+  CreateSpotifyPlaylistEvent(
+      {@required this.title, @required this.sharedSongs});
+
+  @override
+  List<Object> get props => [title, sharedSongs];
 }

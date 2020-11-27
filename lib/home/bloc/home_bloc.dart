@@ -13,6 +13,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:http/http.dart' as http;
+import 'package:url_launcher/url_launcher.dart';
 
 part 'home_event.dart';
 part 'home_state.dart';
@@ -88,6 +89,30 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
         //TODO error al cargar stats
         print(error);
       }
+    } else if (event is CreateSpotifyPlaylistEvent) {
+      if (topTracks.length > 0) {
+        try {
+          //create playlist
+          var responsePlaylistCreate = await createSpotifyPlaylist(event.title);
+          Map<String, dynamic> dataPlaylist =
+              jsonDecode(responsePlaylistCreate.body);
+          String newPlaylistUrl = dataPlaylist["external_urls"]["spotify"];
+          String newPlaylistId = dataPlaylist["id"];
+          print(newPlaylistUrl);
+
+          //add tracks
+          if (!event.sharedSongs) {
+            var body = {"uris": []};
+            for (var track in topTracks) {
+              body["uris"].add(track.trackUri);
+            }
+            await addTracksSpotifyPlaylist(body, newPlaylistId);
+            launch(newPlaylistUrl);
+          }
+        } catch (error) {
+          print(error);
+        }
+      }
     }
   }
 
@@ -153,5 +178,34 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
 
   updateSpotifyKey(String newKey) {
     spotifyApiKey = newKey;
+  }
+
+  Future<http.Response> createSpotifyPlaylist(String title) {
+    String spotifyId = "flpnnk481ygtk9u1l1mcw9cs8";
+    String url = "https://api.spotify.com/v1/users/$spotifyId/playlists";
+
+    var requestBody = {
+      "name": "$title",
+      "description": "This playlista was created using Mambo",
+      "public": true
+    };
+
+    return http.post(url, body: jsonEncode(requestBody), headers: {
+      'Accept': 'application/json',
+      // 'Content-Type': 'application/json',
+      'Authorization': 'Bearer $spotifyApiKey',
+    });
+  }
+
+  Future<http.Response> addTracksSpotifyPlaylist(var body, String playlistId) {
+    String url = "https://api.spotify.com/v1/playlists/$playlistId/tracks";
+
+    String requestBody = jsonEncode(body);
+
+    return http.post(url, body: requestBody, headers: {
+      'Accept': 'application/json',
+      // 'Content-Type': 'application/json',
+      'Authorization': 'Bearer $spotifyApiKey',
+    });
   }
 }

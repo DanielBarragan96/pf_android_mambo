@@ -72,7 +72,7 @@ class _DrawerWidgetState extends State<DrawerWidget> {
                         "Update Spotify Key",
                         style: TextStyle(color: kWhite),
                       ),
-                      leading: FaIcon(FontAwesomeIcons.spotify, color: kWhite),
+                      leading: FaIcon(FontAwesomeIcons.key, color: kWhite),
                       onTap: () {
                         showUpdateKeyModal();
                       },
@@ -85,6 +85,19 @@ class _DrawerWidgetState extends State<DrawerWidget> {
                       leading: FaIcon(FontAwesomeIcons.spotify, color: kWhite),
                       onTap: () {
                         widget.bloc.add(LoadSpotifyStatsEvent());
+                      },
+                    ),
+                    ListTile(
+                      title: Text(
+                        "Create top 20 Spotify Playlist",
+                        style: TextStyle(color: kWhite),
+                      ),
+                      leading: FaIcon(FontAwesomeIcons.list, color: kWhite),
+                      onTap: () {
+                        widget.bloc.add(CreateSpotifyPlaylistEvent(
+                          title: "Your top 20",
+                          sharedSongs: false,
+                        ));
                       },
                     ),
                     SizedBox(height: 16),

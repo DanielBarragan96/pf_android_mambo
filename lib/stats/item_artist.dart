@@ -1,6 +1,7 @@
 import 'package:entregable_2/models/artist.dart';
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:share/share.dart';
 
 import '../colors.dart';
 
@@ -13,6 +14,9 @@ class ItemArtist extends StatelessWidget {
     return GestureDetector(
       onTap: () {
         launch(artist.artistUrl);
+      },
+      onLongPress: () {
+        Share.share(artist.artistUrl, subject: artist.artistName);
       },
       child: Container(
         child: Padding(

@@ -1,6 +1,7 @@
 import 'package:entregable_2/colors.dart';
 import 'package:entregable_2/models/track.dart';
 import 'package:flutter/material.dart';
+import 'package:share/share.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class ItemSong extends StatelessWidget {
@@ -12,6 +13,9 @@ class ItemSong extends StatelessWidget {
     return GestureDetector(
       onTap: () {
         launch(song.trackUrl);
+      },
+      onLongPress: () {
+        Share.share(song.trackUrl, subject: song.trackName);
       },
       child: Container(
         child: Padding(

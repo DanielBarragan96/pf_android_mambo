@@ -13,16 +13,42 @@ class ArtistList extends StatefulWidget {
 }
 
 class _ArtistListState extends State<ArtistList> {
+  TextEditingController searchController = TextEditingController();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: kBlack,
-      body: ListView.builder(
-        itemCount: widget.artists.length,
-        itemBuilder: (BuildContext context, int index) {
-          return ItemArtist(artist: widget.artists[index]);
-        },
+      body: SingleChildScrollView(
+        child: Column(
+          children: <Widget>[
+            Container(
+              padding: EdgeInsets.fromLTRB(20, 10, 20, 10),
+              child: TextField(
+                controller: searchController,
+                decoration: InputDecoration(
+                  border: OutlineInputBorder(),
+                  labelText: 'Buscar',
+                  fillColor: Colors.white,
+                  filled: true,
+                ),
+              ),
+            ),
+            SizedBox(
+              height: 500,
+              child: ListView.builder(
+                shrinkWrap: true,
+                itemCount: widget.artists.length,
+                itemBuilder: (BuildContext context, int index) {
+                  return ItemArtist(artist: widget.artists[index]);
+                },
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
 }
+
+

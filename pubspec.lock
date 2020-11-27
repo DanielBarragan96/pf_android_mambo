@@ -484,7 +484,7 @@ packages:
       name: share
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.6.5+3"
+    version: "0.6.5+4"
   sky_engine:
     dependency: transitive
     description: flutter

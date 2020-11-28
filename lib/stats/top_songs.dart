@@ -13,6 +13,14 @@ class SongList extends StatefulWidget {
 
 class _SongListState extends State<SongList> {
   TextEditingController searchController = TextEditingController();
+  List<Track> _songsList = [];
+
+  @override
+  void initState() {
+    _songsList.clear();
+    _songsList.addAll(widget.songs);    
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -31,21 +39,19 @@ class _SongListState extends State<SongList> {
                   fillColor: Colors.white,
                   filled: true,
                 ),
+                onChanged: (String text){
+                  _searchSongs();
+                  setState(() {});
+                },
               ),
             ),
             SizedBox(
               height: 500,
               child: ListView.builder(
                 shrinkWrap: true,
-                itemCount: searchController.text == ""?
-                  widget.songs.length:
-                  _searchSongs().length,
+                itemCount: _songsList.length,
                 itemBuilder: (BuildContext context, int index) {
-                  return ItemSong(
-                    song: searchController.text == ""?
-                      widget.songs[index]:
-                      _searchSongs()[index],
-                  );
+                  return ItemSong(song: _songsList[index]);
                 },
               ),
             ),
@@ -55,15 +61,22 @@ class _SongListState extends State<SongList> {
     );
   }
 
-  List<Track> _searchSongs(){
-    List<Track> newList;
+  void _searchSongs(){
+    if(searchController.text == ""){
+      _songsList.clear();
+      _songsList.addAll(widget.songs);
+    }else{
+      if(_songsList.isNotEmpty){
+        _songsList.clear();
+      }
 
-    for (int index=0;index<widget.songs.length;index++) {
-      if(widget.songs[index].trackName.contains(searchController.text)){
-        newList.add(widget.songs[index]);
+      for (int index=0;index<widget.songs.length;index++) {
+        Track _newSong = widget.songs[index];
+
+        if(_newSong.trackName.contains(searchController.text)){
+          _songsList.add(_newSong);
+        }
       }
     }   
-
-    return newList;
-  }
+  }  
 }

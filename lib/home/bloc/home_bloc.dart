@@ -23,7 +23,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
   List<Artist> topArtists = List();
   List<Track> topTracks = List();
   String spotifyApiKey =
-      "BQCCMf7EfCDnIIzsHIJyY9jSFe_i68hcL4OisgBhdQcwEiDxqFjZmtOLHsAQo_afTM5899kyhopeCiDio8Fbb0UHpcP3aO8R8IWM1ANXxjhvmiXfa9STq4A2qLGjG1p_PDYm8co7RbWFq4Pbzi6g-6trKg4";
+      "BQAAoHM3DO62-8RnHREbCfef2Ohf67z-GrO810e4FS3g2-8zdJm5-CmZOf_Ho-xHQ4rF2Jk1kJpxUyhGHLUh0BTNoYXhJW7IrdF9fg3S75JL9rcJZ0GE7tDs75i-Yt75V-ebUWHcMC8yhmkWx8CGZTmUb-4";
 
   HomeBloc({@required this.loginBloc}) : super(MenuMapState());
 

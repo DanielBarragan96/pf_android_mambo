@@ -14,6 +14,13 @@ class ArtistList extends StatefulWidget {
 
 class _ArtistListState extends State<ArtistList> {
   TextEditingController searchController = TextEditingController();
+  List<Artist> _artistsList = [];
+  @override
+  void initState() {
+    _artistsList.clear();
+    _artistsList.addAll(widget.artists);    
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -32,15 +39,19 @@ class _ArtistListState extends State<ArtistList> {
                   fillColor: Colors.white,
                   filled: true,
                 ),
+                onChanged: (String text){
+                  _searchArtists();
+                  setState(() {});
+                },
               ),
             ),
             SizedBox(
               height: 500,
               child: ListView.builder(
                 shrinkWrap: true,
-                itemCount: widget.artists.length,
+                itemCount: _artistsList.length,
                 itemBuilder: (BuildContext context, int index) {
-                  return ItemArtist(artist: widget.artists[index]);
+                  return ItemArtist(artist: _artistsList[index]);
                 },
               ),
             ),
@@ -49,6 +60,26 @@ class _ArtistListState extends State<ArtistList> {
       ),
     );
   }
+
+  void _searchArtists(){
+    if(searchController.text == ""){
+      _artistsList.clear();
+      _artistsList.addAll(widget.artists);
+    }else{
+      if(_artistsList.isNotEmpty){
+        _artistsList.clear();
+      }
+
+      for (int index=0;index<widget.artists.length;index++) {
+        Artist _newSong = widget.artists[index];
+
+        if(_newSong.artistName.contains(searchController.text)){
+          _artistsList.add(_newSong);
+        }
+      }
+    }   
+  }  
+
 }
 
 

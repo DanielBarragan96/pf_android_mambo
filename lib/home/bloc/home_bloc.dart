@@ -8,6 +8,8 @@ import 'package:entregable_2/login/login_page.dart';
 import 'package:entregable_2/models/artist.dart';
 import 'package:entregable_2/models/track.dart';
 import 'package:equatable/equatable.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_database/firebase_database.dart';
 // import 'package:firebase_ml_vision/firebase_ml_vision.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -23,7 +25,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
   List<Artist> topArtists = List();
   List<Track> topTracks = List();
   String spotifyApiKey =
-      "BQAAoHM3DO62-8RnHREbCfef2Ohf67z-GrO810e4FS3g2-8zdJm5-CmZOf_Ho-xHQ4rF2Jk1kJpxUyhGHLUh0BTNoYXhJW7IrdF9fg3S75JL9rcJZ0GE7tDs75i-Yt75V-ebUWHcMC8yhmkWx8CGZTmUb-4";
+      "BQDQb45w8yx26mzsZcrxTmvvqdH7RIAeYHT3GJNrl9mPaflOFcZaFAqap92a-llg7yg3tyMycoPcmMyeF_uEA2GnsYzFaH3x1VP3yy1TsPC5rmP1GbRvAfuuYq2DU_MTMdFaKeBX0yXEadtbRUMuDTMwdKc";
 
   HomeBloc({@required this.loginBloc}) : super(MenuMapState());
 
@@ -89,6 +91,14 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
         //TODO error al cargar stats
         print(error);
       }
+    } else if (event is SyncSpotifyStatsEvent) {
+      try{
+        await _syncSpotifyStats(topTracks,topArtists);
+        yield MenuStatsState(topTracks: topTracks, topArtists: topArtists);
+      } catch (error) {
+        //TODO error al cargar stats
+        print(error);
+      }      
     } else if (event is CreateSpotifyPlaylistEvent) {
       if (topTracks.length > 0) {
         try {
@@ -208,4 +218,33 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
       'Authorization': 'Bearer $spotifyApiKey',
     });
   }
+
+  Future<void> _syncSpotifyStats(List<Track> tracks,List<Artist> artists) async{
+    User _user = FirebaseAuth.instance.currentUser;
+    DatabaseReference _firebaseDatabase;
+
+    for(int index = 0;index<20;index++){
+      _firebaseDatabase = FirebaseDatabase.instance
+          .reference()
+          .child("profiles/${_user.uid}/stats/artists/${index+1}");
+      
+      //_firebaseDatabase.remove(); 
+      _firebaseDatabase.update({
+        "artistname": artists[index].artistName,
+      });
+    }
+
+    for(int index = 0;index<20;index++){
+      _firebaseDatabase = FirebaseDatabase.instance
+          .reference()
+          .child("profiles/${_user.uid}/stats/tracks/${index+1}");
+      
+      //_firebaseDatabase.remove(); 
+      _firebaseDatabase.update({
+        "trackname": tracks[index].trackName,
+        "artistname": tracks[index].artistName,
+        "albumname": tracks[index].albumName,
+      });        
+    }
+  }  
 }

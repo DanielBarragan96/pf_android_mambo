@@ -2,6 +2,8 @@ import 'package:entregable_2/colors.dart';
 import 'package:entregable_2/home/bloc/home_bloc.dart';
 import 'package:entregable_2/home/drawer.dart';
 import 'package:entregable_2/map/menu_map_data.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -30,6 +32,8 @@ class _MapPageState extends State<MapPage> {
   int _user_index = 0;
   String _darkMapStyle;
   final LatLng _center = const LatLng(20.608160, -103.414496);
+  User _user = FirebaseAuth.instance.currentUser;
+  DatabaseReference _firebaseDatabase;
 
   @override
   void initState() {
@@ -151,6 +155,14 @@ class _MapPageState extends State<MapPage> {
     // get current position
     _currentPosition = await Geolocator.getCurrentPosition(
         desiredAccuracy: LocationAccuracy.high);
+
+    _firebaseDatabase = FirebaseDatabase.instance
+        .reference()
+        .child("profiles/${_user.uid}/location/");
+    _firebaseDatabase.update({
+      "lat": _currentPosition.latitude,
+      "long": _currentPosition.longitude,
+    });
 
     // move camera
     _mapController.animateCamera(

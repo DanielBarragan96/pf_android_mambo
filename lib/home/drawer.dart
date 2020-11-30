@@ -89,6 +89,16 @@ class _DrawerWidgetState extends State<DrawerWidget> {
                     ),
                     ListTile(
                       title: Text(
+                        "Sync Spotify Stats",
+                        style: TextStyle(color: kWhite),
+                      ),
+                      leading: FaIcon(FontAwesomeIcons.sync, color: kWhite),
+                      onTap: () {
+                        widget.bloc.add(SyncSpotifyStatsEvent());
+                      },
+                    ),                    
+                    ListTile(
+                      title: Text(
                         "Create top 20 Spotify Playlist",
                         style: TextStyle(color: kWhite),
                       ),

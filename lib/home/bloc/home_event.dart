@@ -44,6 +44,11 @@ class LoadSpotifyStatsEvent extends HomeEvent {
   List<Object> get props => [];
 }
 
+class SyncSpotifyStatsEvent extends HomeEvent {
+  @override
+  List<Object> get props => [];
+}
+
 class CreateSpotifyPlaylistEvent extends HomeEvent {
   final String title;
   final bool sharedSongs;

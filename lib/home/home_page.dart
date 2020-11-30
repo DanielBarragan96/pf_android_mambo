@@ -42,7 +42,10 @@ class _HomePageState extends State<HomePage> {
         child: BlocBuilder<HomeBloc, HomeState>(
           builder: (context, state) {
             if (state is MenuStatsState) {
-              return menuStatsPage(_bloc, context);
+              return StatsPage(
+                bloc: _bloc, 
+                context: context
+              );
             }
             if (state is MenuMapState) {
               return MapPage(

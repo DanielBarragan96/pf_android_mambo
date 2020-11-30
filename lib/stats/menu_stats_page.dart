@@ -12,80 +12,97 @@ final _tabsList = [
   Tab(icon: Icon(Icons.album), text: "Top Artistas"),
 ];
 
-Widget menuStatsPage(HomeBloc _bloc, BuildContext context) {
-  return DefaultTabController(
-    length: 2,
-    child: Scaffold(
-      backgroundColor: kBlack,
-      drawer: DrawerWidget(
-        bloc: _bloc,
-      ),
-      appBar: AppBar(
-        title: Text("Stats"),
-        bottom: TabBar(
-          tabs: _tabsList,
+class StatsPage extends StatefulWidget {
+  final HomeBloc bloc;
+  final BuildContext context;
+
+  StatsPage({
+    Key key, 
+    @required this.bloc, 
+    @required this.context
+  }) : super(key: key);
+
+  @override
+  _StatsPageState createState() => _StatsPageState();
+}
+
+class _StatsPageState extends State<StatsPage> {
+  @override
+  Widget build(BuildContext context) {
+    return DefaultTabController(
+      length: 2,
+      child: Scaffold(
+        backgroundColor: kBlack,
+        drawer: DrawerWidget(
+          bloc: widget.bloc,
         ),
-      ),
-      body: BlocProvider(
-        create: (context) {
-          return _bloc;
-        },
-        child: BlocBuilder<HomeBloc, HomeState>(
-          cubit: _bloc,
-          builder: (context, state) {
-            if (state is MenuStatsState) {
-              return TabBarView(
-                children: [
-                  SongList(songs: state.topTracks),
-                  ArtistList(artists: state.topArtists),
-                ],
-              );
-            } else
-              return Center();
+        appBar: AppBar(
+          title: Text("Stats"),
+          bottom: TabBar(
+            tabs: _tabsList,
+          ),
+        ),
+        body: BlocProvider(
+          create: (context) {
+            return widget.bloc;
           },
+          child: BlocBuilder<HomeBloc, HomeState>(
+            cubit: widget.bloc,
+            builder: (context, state) {
+              if (state is MenuStatsState) {
+                return TabBarView(
+                  children: [
+                    SongList(songs: state.topTracks),
+                    ArtistList(artists: state.topArtists),
+                  ],
+                );
+              } else
+                return Center();
+            },
+          ),
         ),
-      ),
-      bottomNavigationBar: SizedBox(
-        height: MediaQuery.of(context).size.height / 10,
-        child: Container(
-          color: kMainPurple,
-          child: Row(
-            children: [
-              SizedBox(
-                width: MediaQuery.of(context).size.width / 3,
-                child: IconButton(
-                  icon: FaIcon(FontAwesomeIcons.spotify),
-                  onPressed: () {},
-                  iconSize: 25.0,
-                  color: kWhite,
+        bottomNavigationBar: SizedBox(
+          height: MediaQuery.of(context).size.height / 10,
+          child: Container(
+            color: kMainPurple,
+            child: Row(
+              children: [
+                SizedBox(
+                  width: MediaQuery.of(context).size.width / 3,
+                  child: IconButton(
+                    icon: FaIcon(FontAwesomeIcons.spotify),
+                    onPressed: () {},
+                    iconSize: 25.0,
+                    color: kWhite,
+                  ),
                 ),
-              ),
-              SizedBox(
-                width: MediaQuery.of(context).size.width / 3,
-                child: IconButton(
-                  icon: FaIcon(FontAwesomeIcons.mapMarkedAlt),
-                  onPressed: () {
-                    _bloc.add(MenuMapEvent());
-                  },
-                  iconSize: 25.0,
-                  color: kLightGray,
+                SizedBox(
+                  width: MediaQuery.of(context).size.width / 3,
+                  child: IconButton(
+                    icon: FaIcon(FontAwesomeIcons.mapMarkedAlt),
+                    onPressed: () {
+                      widget.bloc.add(MenuMapEvent());
+                    },
+                    iconSize: 25.0,
+                    color: kLightGray,
+                  ),
                 ),
-              ),
-              SizedBox(
-                width: MediaQuery.of(context).size.width / 3,
-                child: IconButton(
-                  icon: FaIcon(FontAwesomeIcons.users),
-                  onPressed: () {
-                    _bloc.add(MenuChatEvent());
-                  },
-                  iconSize: 25.0,
-                  color: kLightGray,
+                SizedBox(
+                  width: MediaQuery.of(context).size.width / 3,
+                  child: IconButton(
+                    icon: FaIcon(FontAwesomeIcons.users),
+                    onPressed: () {
+                      widget.bloc.add(MenuChatEvent());
+                    },
+                    iconSize: 25.0,
+                    color: kLightGray,
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),
-    ),
-  );
+    );
+  }
 }

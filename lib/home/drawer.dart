@@ -124,6 +124,16 @@ class _DrawerWidgetState extends State<DrawerWidget> {
                         ));
                       },
                     ),
+                    ListTile(
+                      title: Text(
+                        "Scan",
+                        style: TextStyle(color: kWhite),
+                      ),
+                      leading: FaIcon(FontAwesomeIcons.qrcode, color: kWhite),
+                      onTap: () {
+                        widget.bloc.add(ScanEvent());
+                      },
+                    ),
                     SizedBox(height: 16),
                     Align(
                       alignment: Alignment.bottomCenter,

@@ -60,3 +60,8 @@ class CreateSpotifyPlaylistEvent extends HomeEvent {
   @override
   List<Object> get props => [title, sharedSongs];
 }
+
+class ScanEvent extends HomeEvent {
+  @override
+  List<Object> get props => [];
+}

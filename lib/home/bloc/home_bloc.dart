@@ -119,20 +119,16 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
             launch(newPlaylistUrl);
           } else if (event.userId != null) {
             var body = {"uris": []};
-            int counter = 0;
-            for (var track in topTracks) {
-              body["uris"].add(track.trackUri);
-              if (++counter >= 5) break;
-            }
-            counter = 0;
             DatabaseReference _firebaseDatabase = FirebaseDatabase.instance
                 .reference()
                 .child("profiles/${event.userId}/stats/tracks");
 
-            for (counter = 1; counter <= 5; counter++) {
-              var track =
-                  await _firebaseDatabase.child("${counter}/trackuri").once();
+            for (int counter = 0; counter < 5; counter++) {
+              var track = await _firebaseDatabase
+                  .child("${counter + 1}/trackuri")
+                  .once();
               body["uris"].add(track.value);
+              body["uris"].add(topTracks[counter].trackUri);
             }
             await addTracksSpotifyPlaylist(body, newPlaylistId);
             launch(newPlaylistUrl);

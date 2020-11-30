@@ -16,6 +16,9 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:http/http.dart' as http;
 import 'package:url_launcher/url_launcher.dart';
+import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
+
+import '../../colors.dart';
 
 part 'home_event.dart';
 part 'home_state.dart';
@@ -41,6 +44,12 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
         // if (event.barcodeScan)
         //   data = await _barcodeScan(img);
         yield Results(result: data, chosenImage: img);
+      }
+    } else if (event is ScanEvent) {
+      String qrScanRes = await FlutterBarcodeScanner.scanBarcode(
+          "#ff6666", "Cancel", true, ScanMode.QR);
+      if (qrScanRes != "" && qrScanRes != " ") {
+        launch(qrScanRes);
       }
     } else if (event is MenuStatsEvent) {
       yield MenuStatsState(topTracks: topTracks, topArtists: topArtists);

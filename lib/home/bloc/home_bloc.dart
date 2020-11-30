@@ -25,7 +25,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
   List<Artist> topArtists = List();
   List<Track> topTracks = List();
   String spotifyApiKey =
-      "BQDQb45w8yx26mzsZcrxTmvvqdH7RIAeYHT3GJNrl9mPaflOFcZaFAqap92a-llg7yg3tyMycoPcmMyeF_uEA2GnsYzFaH3x1VP3yy1TsPC5rmP1GbRvAfuuYq2DU_MTMdFaKeBX0yXEadtbRUMuDTMwdKc";
+      "BQA0FvJNF7ccTBnmVJeAYy1WS65E_Fq1fCf52w_pXeDugaGLfR7x2mZUxYTllxZx2KVnzDZxSaahXQUBxrrFA1DGgLl35OSOChaqarOQzDXcX_IjRFhpoNe3c_84IegkSjKFj74nMtqSqWhnXynLuf_EbCg";
 
   HomeBloc({@required this.loginBloc}) : super(MenuMapState());
 
@@ -231,6 +231,8 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
       //_firebaseDatabase.remove(); 
       _firebaseDatabase.update({
         "artistname": artists[index].artistName,
+        "artistimageurl": artists[index].artistImageUrl,
+        "artisturl": artists[index].artistUrl,
       });
     }
 
@@ -244,6 +246,9 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
         "trackname": tracks[index].trackName,
         "artistname": tracks[index].artistName,
         "albumname": tracks[index].albumName,
+        "albumimageurl": tracks[index].albumImageUrl,
+        "trackuri": tracks[index].trackUri,
+        "trackurl": tracks[index].trackUrl,
       });        
     }
   }  

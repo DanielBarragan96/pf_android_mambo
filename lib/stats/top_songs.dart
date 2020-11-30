@@ -18,7 +18,7 @@ class _SongListState extends State<SongList> {
   @override
   void initState() {
     _songsList.clear();
-    _songsList.addAll(widget.songs);    
+    _songsList.addAll(widget.songs);
     super.initState();
   }
 
@@ -32,14 +32,16 @@ class _SongListState extends State<SongList> {
             Container(
               padding: EdgeInsets.fromLTRB(20, 10, 20, 10),
               child: TextField(
+                style: TextStyle(color: kWhite),
                 controller: searchController,
                 decoration: InputDecoration(
                   border: OutlineInputBorder(),
                   labelText: 'Buscar',
-                  fillColor: Colors.white,
+                  labelStyle: TextStyle(color: kWhite),
+                  fillColor: kLightBlack,
                   filled: true,
                 ),
-                onChanged: (String text){
+                onChanged: (String text) {
                   _searchSongs();
                   setState(() {});
                 },
@@ -61,22 +63,22 @@ class _SongListState extends State<SongList> {
     );
   }
 
-  void _searchSongs(){
-    if(searchController.text == ""){
+  void _searchSongs() {
+    if (searchController.text == "") {
       _songsList.clear();
       _songsList.addAll(widget.songs);
-    }else{
-      if(_songsList.isNotEmpty){
+    } else {
+      if (_songsList.isNotEmpty) {
         _songsList.clear();
       }
 
-      for (int index=0;index<widget.songs.length;index++) {
+      for (int index = 0; index < widget.songs.length; index++) {
         Track _newSong = widget.songs[index];
 
-        if(_newSong.trackName.contains(searchController.text)){
+        if (_newSong.trackName.contains(searchController.text)) {
           _songsList.add(_newSong);
         }
       }
-    }   
-  }  
+    }
+  }
 }

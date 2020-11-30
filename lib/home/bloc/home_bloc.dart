@@ -24,8 +24,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
   final LoginBloc loginBloc;
   List<Artist> topArtists = List();
   List<Track> topTracks = List();
-  String spotifyApiKey =
-      "BQA0FvJNF7ccTBnmVJeAYy1WS65E_Fq1fCf52w_pXeDugaGLfR7x2mZUxYTllxZx2KVnzDZxSaahXQUBxrrFA1DGgLl35OSOChaqarOQzDXcX_IjRFhpoNe3c_84IegkSjKFj74nMtqSqWhnXynLuf_EbCg";
+  String spotifyApiKey = "";
 
   HomeBloc({@required this.loginBloc}) : super(MenuMapState());
 
@@ -92,13 +91,13 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
         print(error);
       }
     } else if (event is SyncSpotifyStatsEvent) {
-      try{
-        await _syncSpotifyStats(topTracks,topArtists);
+      try {
+        await _syncSpotifyStats(topTracks, topArtists);
         yield MenuStatsState(topTracks: topTracks, topArtists: topArtists);
       } catch (error) {
         //TODO error al cargar stats
         print(error);
-      }      
+      }
     } else if (event is CreateSpotifyPlaylistEvent) {
       if (topTracks.length > 0) {
         try {
@@ -115,6 +114,21 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
             var body = {"uris": []};
             for (var track in topTracks) {
               body["uris"].add(track.trackUri);
+            }
+            await addTracksSpotifyPlaylist(body, newPlaylistId);
+            launch(newPlaylistUrl);
+          } else if (event.userId != null) {
+            var body = {"uris": []};
+            DatabaseReference _firebaseDatabase = FirebaseDatabase.instance
+                .reference()
+                .child("profiles/${event.userId}/stats/tracks");
+
+            for (int counter = 0; counter < 5; counter++) {
+              var track = await _firebaseDatabase
+                  .child("${counter + 1}/trackuri")
+                  .once();
+              body["uris"].add(track.value);
+              body["uris"].add(topTracks[counter].trackUri);
             }
             await addTracksSpotifyPlaylist(body, newPlaylistId);
             launch(newPlaylistUrl);
@@ -219,16 +233,17 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     });
   }
 
-  Future<void> _syncSpotifyStats(List<Track> tracks,List<Artist> artists) async{
+  Future<void> _syncSpotifyStats(
+      List<Track> tracks, List<Artist> artists) async {
     User _user = FirebaseAuth.instance.currentUser;
     DatabaseReference _firebaseDatabase;
 
-    for(int index = 0;index<20;index++){
+    for (int index = 0; index < 20; index++) {
       _firebaseDatabase = FirebaseDatabase.instance
           .reference()
-          .child("profiles/${_user.uid}/stats/artists/${index+1}");
-      
-      //_firebaseDatabase.remove(); 
+          .child("profiles/${_user.uid}/stats/artists/${index + 1}");
+
+      //_firebaseDatabase.remove();
       _firebaseDatabase.update({
         "artistname": artists[index].artistName,
         "artistimageurl": artists[index].artistImageUrl,
@@ -236,12 +251,12 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
       });
     }
 
-    for(int index = 0;index<20;index++){
+    for (int index = 0; index < 20; index++) {
       _firebaseDatabase = FirebaseDatabase.instance
           .reference()
-          .child("profiles/${_user.uid}/stats/tracks/${index+1}");
-      
-      //_firebaseDatabase.remove(); 
+          .child("profiles/${_user.uid}/stats/tracks/${index + 1}");
+
+      //_firebaseDatabase.remove();
       _firebaseDatabase.update({
         "trackname": tracks[index].trackName,
         "artistname": tracks[index].artistName,
@@ -249,7 +264,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
         "albumimageurl": tracks[index].albumImageUrl,
         "trackuri": tracks[index].trackUri,
         "trackurl": tracks[index].trackUrl,
-      });        
+      });
     }
-  }  
+  }
 }

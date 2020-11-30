@@ -96,7 +96,7 @@ class _DrawerWidgetState extends State<DrawerWidget> {
                       onTap: () {
                         widget.bloc.add(SyncSpotifyStatsEvent());
                       },
-                    ),                    
+                    ),
                     ListTile(
                       title: Text(
                         "Create top 20 Spotify Playlist",
@@ -107,6 +107,20 @@ class _DrawerWidgetState extends State<DrawerWidget> {
                         widget.bloc.add(CreateSpotifyPlaylistEvent(
                           title: "Your top 20",
                           sharedSongs: false,
+                        ));
+                      },
+                    ),
+                    ListTile(
+                      title: Text(
+                        "Create Shared Spotify Playlist",
+                        style: TextStyle(color: kWhite),
+                      ),
+                      leading: FaIcon(FontAwesomeIcons.users, color: kWhite),
+                      onTap: () {
+                        widget.bloc.add(CreateSpotifyPlaylistEvent(
+                          title: "Your playlist with Chava",
+                          sharedSongs: true,
+                          userId: "FrcopZA9lGg3IfjVpRIU01bFNWO2",
                         ));
                       },
                     ),

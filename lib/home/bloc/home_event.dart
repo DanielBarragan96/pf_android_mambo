@@ -52,9 +52,10 @@ class SyncSpotifyStatsEvent extends HomeEvent {
 class CreateSpotifyPlaylistEvent extends HomeEvent {
   final String title;
   final bool sharedSongs;
+  final String userId;
 
   CreateSpotifyPlaylistEvent(
-      {@required this.title, @required this.sharedSongs});
+      {@required this.title, @required this.sharedSongs, this.userId});
 
   @override
   List<Object> get props => [title, sharedSongs];

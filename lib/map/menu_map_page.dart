@@ -11,16 +11,23 @@ import 'package:geocoding/geocoding.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:share/share.dart';
+import 'package:entregable_2/models/artist.dart';
+import 'package:entregable_2/models/track.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_database/firebase_database.dart';
 
-List<Users> _usersList = getUsersList();
-Set<Marker> _mapMarkers = getMarkersSet();
+List<MapUser> _usersList = [];
+Set<Marker> _mapMarkers = {};
 
 class MapPage extends StatefulWidget {
   final HomeBloc bloc;
   final BuildContext context;
 
-  MapPage({Key key, @required this.bloc, @required this.context})
-      : super(key: key);
+  MapPage({
+    Key key, 
+    @required this.bloc, 
+    @required this.context
+  }): super(key: key);
 
   @override
   _MapPageState createState() => _MapPageState();
@@ -38,6 +45,7 @@ class _MapPageState extends State<MapPage> {
   @override
   void initState() {
     _loadDarkThemeMap();
+    _getUsersInfo();
     super.initState();
   }
 
@@ -197,7 +205,7 @@ class _MapPageState extends State<MapPage> {
     return "No address availabe";
   }
 
-  void _showUserCard(BuildContext context, Users user) async {
+  void _showUserCard(BuildContext context, MapUser user) async {
     String address = await _getGeolocationAddress(
       Position(latitude: user.coord.latitude, longitude: user.coord.longitude),
     );
@@ -232,7 +240,7 @@ class _MapPageState extends State<MapPage> {
               crossAxisAlignment: CrossAxisAlignment.center,
               children: <Widget>[
                 Text(
-                  "${user.firstname} " + "${user.lastname}",
+                  "${user.name}",
                   style: TextStyle(
                     fontWeight: FontWeight.bold,
                     fontSize: 24,
@@ -280,7 +288,7 @@ class _MapPageState extends State<MapPage> {
                             color: kMainPurple),
                         onPressed: () {
                           Navigator.of(context).pop();
-                          _showStasCard(context, user);
+                          _showStatsCard(context, user);
                         }),
                     SizedBox(
                       width: 20,
@@ -292,7 +300,7 @@ class _MapPageState extends State<MapPage> {
                           Navigator.of(context).pop();
                           setState(() {
                             _user_index++;
-                            if (_user_index == _usersList.length - 1) {
+                            if (_user_index == _usersList.length) {
                               _user_index = 0;
                             }
                           });
@@ -315,7 +323,7 @@ class _MapPageState extends State<MapPage> {
     );
   }
 
-  void _showStasCard(BuildContext context, Users user) async {
+  void _showStatsCard(BuildContext context, MapUser user) async {
     await showModalBottomSheet(
       backgroundColor: kBlack,
       context: context,
@@ -334,7 +342,7 @@ class _MapPageState extends State<MapPage> {
               crossAxisAlignment: CrossAxisAlignment.center,
               children: <Widget>[
                 Text(
-                  "${user.firstname} " + "${user.lastname}",
+                  "${user.name}",
                   style: TextStyle(
                     fontWeight: FontWeight.bold,
                     fontSize: 24,
@@ -353,7 +361,7 @@ class _MapPageState extends State<MapPage> {
                         ClipRRect(
                           borderRadius: BorderRadius.circular(8.0),
                           child: Image.network(
-                            user.imgsong,
+                            user.favsong.albumImageUrl,
                             fit: BoxFit.fill,
                             width: 140,
                             height: 140,
@@ -363,7 +371,7 @@ class _MapPageState extends State<MapPage> {
                           height: 20,
                         ),
                         Text(
-                          "${user.favsong}",
+                          "${user.favsong.trackName}",
                           style: TextStyle(
                             fontWeight: FontWeight.bold,
                             fontSize: 18,
@@ -381,7 +389,7 @@ class _MapPageState extends State<MapPage> {
                         ClipRRect(
                           borderRadius: BorderRadius.circular(8.0),
                           child: Image.network(
-                            user.imgartist,
+                            user.favartist.artistImageUrl,
                             fit: BoxFit.fill,
                             width: 140,
                             height: 140,
@@ -391,7 +399,7 @@ class _MapPageState extends State<MapPage> {
                           height: 20,
                         ),
                         Text(
-                          "${user.favartist}",
+                          "${user.favartist.artistName}",
                           style: TextStyle(
                             fontWeight: FontWeight.bold,
                             fontSize: 18,
@@ -438,7 +446,7 @@ class _MapPageState extends State<MapPage> {
                           Navigator.of(context).pop();
                           setState(() {
                             _user_index++;
-                            if (_user_index == _usersList.length - 1) {
+                            if (_user_index == _usersList.length) {
                               _user_index = 0;
                             }
                           });
@@ -460,4 +468,50 @@ class _MapPageState extends State<MapPage> {
       ),
     );
   }
+
+  void _getUsersInfo() async {
+    FirebaseDatabase _firebaseDatabase;
+    Map retrievedData;
+
+    _firebaseDatabase = await FirebaseDatabase.instance
+        .reference()
+        .child("profiles")
+        .once()
+        .then((DataSnapshot data){
+          setState((){
+            retrievedData = data.value;
+          });
+        });
+
+    retrievedData.forEach((key, value) {
+      LatLng coords = LatLng(value["location"]["lat"],value["location"]["long"]);
+      _usersList.add(
+        MapUser(
+          coord: coords,
+          name: value["name"],
+          favsong: Track(
+            artistName:    value["stats"]["tracks"][1]["artistname"],
+            trackName:     value["stats"]["tracks"][1]["trackname"],
+            albumName:     value["stats"]["tracks"][1]["albumname"],
+            albumImageUrl: value["stats"]["tracks"][1]["albumimageurl"],
+            trackUri:      value["stats"]["tracks"][1]["trackuri"],
+            trackUrl:      value["stats"]["tracks"][1]["trackurl"],
+          ),
+          favartist: Artist(
+            artistName:     value["stats"]["artists"][1]["artistname"],
+            artistImageUrl: value["stats"]["artists"][1]["artistimageurl"],
+            artistUrl:      value["stats"]["artists"][1]["artisturl"],
+          )
+        )
+      );
+      _mapMarkers.add(
+        Marker(
+          markerId: MarkerId(coords.toString()),
+          position: coords,
+          icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueViolet),
+        ),        
+      ); 
+    });    
+  }
+
 }

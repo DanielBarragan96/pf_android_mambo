@@ -276,6 +276,7 @@ class _MapPageState extends State<MapPage> {
                         onPressed: () {
                           user.liked = !user.liked;
                           setState(() {});
+                          _likeUser(user);
                           Navigator.of(context).pop();
                           _showUserCard(context, _usersList[_user_index]);
                         }),
@@ -423,6 +424,7 @@ class _MapPageState extends State<MapPage> {
                         onPressed: () {
                           user.liked = !user.liked;
                           setState(() {});
+                          _likeUser(user);
                           Navigator.of(context).pop();
                           _showUserCard(context, _usersList[_user_index]);
                         }),
@@ -487,6 +489,7 @@ class _MapPageState extends State<MapPage> {
       LatLng coords = LatLng(value["location"]["lat"],value["location"]["long"]);
       _usersList.add(
         MapUser(
+          userid: key,
           coord: coords,
           name: value["name"],
           favsong: Track(
@@ -514,4 +517,53 @@ class _MapPageState extends State<MapPage> {
     });    
   }
 
+  Future<void> _likeUser(MapUser otherUser) async {
+    User _ownUser = FirebaseAuth.instance.currentUser;
+    DatabaseReference _firebaseDatabase;
+    Map retrievedData;
+
+    _firebaseDatabase = FirebaseDatabase.instance
+        .reference()
+        .child("matches/${_ownUser.uid}/${otherUser.userid}/");
+    
+    if(_ownUser.uid != otherUser.userid){
+
+      await FirebaseDatabase.instance
+          .reference()
+          .child("matches")
+          .once()
+          .then((DataSnapshot data){
+            setState((){
+              retrievedData = data.value;
+            });
+          });
+      //print(retrievedData);
+      if(retrievedData["${otherUser.userid}"]["${_ownUser.uid}"]["match"] == "waiting"){
+        _firebaseDatabase.update({
+          "match": 'accepted',
+        });
+
+        _firebaseDatabase = FirebaseDatabase.instance
+            .reference()
+            .child("matches/${otherUser.userid}/${_ownUser.uid}/");     
+
+        _firebaseDatabase.update({
+          "match": 'accepted',
+        });
+
+        //widget.bloc.add(SingleChatEvent(userName: _data[index]));        
+      }else{
+        _firebaseDatabase.update({
+          "match": 'accepted',
+        });  
+        _firebaseDatabase = FirebaseDatabase.instance
+            .reference()
+            .child("matches/${otherUser.userid}/${_ownUser.uid}/");     
+
+        _firebaseDatabase.update({
+          "match": 'waiting',
+        });              
+      }
+    }
+  }
 }

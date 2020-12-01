@@ -4,6 +4,7 @@ import 'package:entregable_2/models/artist.dart';
 import 'package:entregable_2/models/track.dart';
 
 class MapUser {
+  final String userid;
   final LatLng coord;
   final String name;
   final Track favsong;
@@ -11,6 +12,7 @@ class MapUser {
   bool liked;
 
   MapUser({
+    @required this.userid,
     @required this.coord,
     @required this.name,
     @required this.favsong,

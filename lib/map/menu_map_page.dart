@@ -537,21 +537,34 @@ class _MapPageState extends State<MapPage> {
               retrievedData = data.value;
             });
           });
-      //print(retrievedData);
-      if(retrievedData["${otherUser.userid}"]["${_ownUser.uid}"]["match"] == "waiting"){
+          
+      if(retrievedData["${otherUser.userid}"]["${_ownUser.uid}"]["match"] == "accepted"){
         _firebaseDatabase.update({
           "match": 'accepted',
         });
+
 
         _firebaseDatabase = FirebaseDatabase.instance
             .reference()
-            .child("matches/${otherUser.userid}/${_ownUser.uid}/");     
-
-        _firebaseDatabase.update({
-          "match": 'accepted',
+            .child("profiles/${_ownUser.uid}/chats/${otherUser.userid}/messages");
+        _firebaseDatabase.push().set({
+          "senderName": _ownUser.displayName,
+          "senderId": _ownUser.uid,
+          "text": "Hola. Hicimos match!!",
+          "timestamp": DateTime.now().millisecondsSinceEpoch,
+          "senderPhotoUrl": _ownUser.photoURL,
         });
-
-        //widget.bloc.add(SingleChatEvent(userName: _data[index]));        
+        //copia
+        _firebaseDatabase = FirebaseDatabase.instance
+            .reference()
+            .child("profiles/${otherUser.userid}/chats/${_ownUser.uid}/messages");        
+        _firebaseDatabase.push().set({
+          "senderName": _ownUser.displayName,
+          "senderId": _ownUser.uid,
+          "text": "Hola. Hicimos match!!",
+          "timestamp": DateTime.now().millisecondsSinceEpoch,
+          "senderPhotoUrl": _ownUser.photoURL,
+        });                         
       }else{
         _firebaseDatabase.update({
           "match": 'accepted',

@@ -21,3 +21,5 @@ Los puntos clave del proyecto son:
 - El video se encuentra en este [link](https://youtu.be/ctxEc77DcjU)
 
 - La Spotify API Key se puede obtener de este [link](https://developer.spotify.com/console/post-playlists/?user_id=&body=%7B%22name%22%3A%22New%20Playlist%22%2C%22description%22%3A%22New%20playlist%20description%22%2C%22public%22%3Afalse%7D)
+
+![Mambo](https://github.com/DanielBarragan96/pf_android_mambo/blob/master/assets/logo/logo_app.png?raw=true)
